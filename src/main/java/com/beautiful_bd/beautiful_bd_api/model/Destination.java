@@ -25,7 +25,12 @@ public class Destination {
     @Column(name = "image_url")
     private List<String> imageUrls;
 
-    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "destination_hotels",
+            joinColumns = @JoinColumn(name = "destination_id"),
+            inverseJoinColumns = @JoinColumn(name = "hotel_id")
+    )
     private List<Hotel> hotels;
 
     // Getters and Setters
@@ -40,6 +45,22 @@ public class Destination {
 
     public String getZilla() {
         return zilla;
+    }
+
+    public String getUpazilla() {
+        return upazilla;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getMapsUrl() {
+        return mapsUrl;
+    }
+
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
     public String description() {
