@@ -1,12 +1,22 @@
 package com.beautiful_bd.beautiful_bd_api.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 
 public class DestinationDTO {
+
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Zilla is required")
     private String zilla;
+
+    // @NotBlank(message = "Upazilla is required")
     private String upazilla;
+
     private String description;
+
     private String mapsUrl;
     private List<String> imageUrls;
     private List<HotelDTO> hotels;
