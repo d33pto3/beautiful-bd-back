@@ -68,30 +68,29 @@ public class DestinationServiceImpl implements DestinationService {
     }
 
     private Destination convertToEntity(DestinationDTO dto) {
-        Destination d = new Destination();
-        d.setName(dto.getName());
-        d.setZilla(dto.getZilla());
-        d.setUpazilla(dto.getUpazilla());
-        d.setDescription(dto.getDescription());
-        d.setImageUrls(dto.getImageUrls());
+        Destination destination = new Destination();
+        destination.setName(dto.getName());
+        destination.setZilla(dto.getZilla());
+        destination.setUpazilla(dto.getUpazilla());
+        destination.setDescription(dto.getDescription());
+        destination.setImageUrls(dto.getImageUrls());
 
-        List<Hotel> hotels = dto.getHotels().stream().map(hDto -> {
-            Hotel hotel = new Hotel();
-            hotel.setName(hDto.getName());
-            hotel.setAddress(hDto.getAddress());
+        // Only map hotels if the list is not null and not empty
+        List<HotelDTO> hotelDTOs = dto.getHotels();
+        if (hotelDTOs != null && !hotelDTOs.isEmpty()) {
+            List<Hotel> hotels = hotelDTOs.stream().map(hDto -> {
+                Hotel hotel = new Hotel();
+                hotel.setName(hDto.getName());
+                hotel.setAddress(hDto.getAddress());
+                hotel.setDestinations(new ArrayList<>(List.of(destination)));
+                return hotel;
+            }).collect(Collectors.toList());
 
-            // Initialize destinations list if null
-            if(hotel.getDestinations() == null) {
-                hotel.setDestinations(new ArrayList<>());
-            }
+            destination.setHotels(hotels);
+        } else {
+            destination.setHotels(new ArrayList<>());
+        }
 
-            // Add this destination to hotel's destinations list
-            hotel.getDestinations().add(d);
-
-            return hotel;
-        }).collect(Collectors.toList());
-
-        d.setHotels(hotels);
-        return d;
+        return destination;
     }
 }
