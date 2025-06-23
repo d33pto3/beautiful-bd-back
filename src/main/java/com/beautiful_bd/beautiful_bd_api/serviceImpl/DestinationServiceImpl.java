@@ -6,11 +6,15 @@ import com.beautiful_bd.beautiful_bd_api.model.Destination;
 import com.beautiful_bd.beautiful_bd_api.model.Hotel;
 import com.beautiful_bd.beautiful_bd_api.repository.DestinationRepository;
 import com.beautiful_bd.beautiful_bd_api.service.DestinationService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +46,10 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Override
     public void deleteDestinationById(Long id) {
+        if (!repository.existsById(id)) {
+            throw new NoSuchElementException("Destination with ID " + id + " not found");
+        }
+
         repository.deleteById(id);
     }
 
@@ -49,6 +57,7 @@ public class DestinationServiceImpl implements DestinationService {
 
     private DestinationDTO convertToDTO(Destination d) {
         DestinationDTO dto = new DestinationDTO();
+        dto.setId(d.getId());
         dto.setName(d.getName());
         dto.setZilla(d.getZilla());
         dto.setUpazilla(d.getUpazilla());

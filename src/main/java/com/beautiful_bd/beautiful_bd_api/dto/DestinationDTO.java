@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class DestinationDTO {
+    private Long id;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -31,6 +32,14 @@ public class DestinationDTO {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
