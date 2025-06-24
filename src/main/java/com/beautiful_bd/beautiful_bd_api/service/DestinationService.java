@@ -10,4 +10,6 @@ public interface DestinationService {
 
     DestinationDTO createDestination(DestinationDTO dto);
     void deleteDestinationById(Long id);
+
+    DestinationDTO updateDestination(Long id, DestinationDTO dto);
 }

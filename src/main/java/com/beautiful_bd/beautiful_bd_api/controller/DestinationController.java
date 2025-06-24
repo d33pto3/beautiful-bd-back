@@ -34,6 +34,19 @@ public class DestinationController {
         return service.createDestination(dto);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> update(@PathVariable Long id, @RequestBody @Valid DestinationDTO dto) {
+//        return service.updateDestination(id, dto);
+        DestinationDTO updated = service.updateDestination(id, dto);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Destination updated successfully");
+        response.put("data", updated);
+
+        return ResponseEntity.status(200).body(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteDestination(@PathVariable Long id) {
         service.deleteDestinationById(id);
@@ -42,6 +55,6 @@ public class DestinationController {
         response.put("status", "success");
         response.put("message", "Destination deleted successfully");
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(200).body(response);
     }
 }

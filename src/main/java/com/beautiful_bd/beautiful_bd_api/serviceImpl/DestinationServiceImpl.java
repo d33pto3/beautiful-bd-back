@@ -5,11 +5,9 @@ import com.beautiful_bd.beautiful_bd_api.dto.HotelDTO;
 import com.beautiful_bd.beautiful_bd_api.model.Destination;
 import com.beautiful_bd.beautiful_bd_api.model.Hotel;
 import com.beautiful_bd.beautiful_bd_api.repository.DestinationRepository;
+import com.beautiful_bd.beautiful_bd_api.repository.HotelRepository;
 import com.beautiful_bd.beautiful_bd_api.service.DestinationService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +20,8 @@ public class DestinationServiceImpl implements DestinationService {
 
     @Autowired
     private DestinationRepository repository;
+    @Autowired
+    private HotelRepository hotelRepository;
 
     @Override
     public List<DestinationDTO> getAllDestinations() {
@@ -42,6 +42,46 @@ public class DestinationServiceImpl implements DestinationService {
         Destination saved = repository.save(destination);
 
         return convertToDTO(saved);
+    }
+
+    @Override
+    public DestinationDTO updateDestination(Long id, DestinationDTO dto) {
+        Destination existing = repository.findById(id).orElseThrow(() ->
+            new RuntimeException("Destination not found with id: " + id)
+        );
+
+        existing.setName(dto.getName());
+        existing.setZilla( dto.getZilla());
+        existing.setUpazilla(dto.getUpazilla());
+        existing.setDescription(dto.getDescription());
+        existing.setImageUrls(dto.getImageUrls());
+        existing.setMapsUrl(dto.getMapsUrl());
+
+        if(dto.getHotels() != null) {
+            List<Hotel> updatedHotels = dto.getHotels().stream()
+                    .map(hDto -> {
+
+                        if(hDto.getId() != null) {
+                            // Lookup by ID
+                            return hotelRepository.findById(hDto.getId())
+                                    .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + hDto.getId()));
+                        } else {
+                            // No ID - assume it's a new hotel
+                            Hotel h = new Hotel();
+                            h.setName(hDto.getName());
+                            h.setAddress(hDto.getAddress());
+                            return hotelRepository.save(h);
+                        }
+
+                    })
+                    .collect(Collectors.toList());
+
+            existing.setHotels(updatedHotels);
+        }
+
+        Destination updated = repository.save(existing);
+
+        return convertToDTO(updated);
     }
 
     @Override
@@ -66,6 +106,7 @@ public class DestinationServiceImpl implements DestinationService {
 
         List<HotelDTO> hotelDTOS = d.getHotels().stream().map(h -> {
             HotelDTO hDto = new HotelDTO();
+            hDto.setId(h.getId());
             hDto.setName(h.getName());
             hDto.setAddress(h.getAddress());
 
